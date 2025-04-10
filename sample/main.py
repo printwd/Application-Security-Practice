@@ -10,21 +10,21 @@ def main():
     print("===== 계산기 사용 예제 =====")
     
     # 덧셈
-    a, b = 10, 5
-    result = calc.add(a, b)
-    print(f"{a} + {b} = {result}")
+    num1, num2 = 10, 5
+    result = calc.add(num1, num2)
+    print(f"{num1} + {num2} = {result}")
     
     # 뺄셈
-    result = calc.subtract(a, b)
-    print(f"{a} - {b} = {result}")
+    result = calc.subtract(num1, num2)
+    print(f"{num1} - {num2} = {result}")
     
     # 곱셈
-    result = calc.multiply(a, b)
-    print(f"{a} * {b} = {result}")
+    result = calc.multiply(num1, num2)
+    print(f"{num1} * {num2} = {result}")
     
     # 나눗셈
-    result = calc.divide(a, b)
-    print(f"{a} / {b} = {result}")
+    result = calc.divide(num1, num2)
+    print(f"{num1} / {num2} = {result}")
     
 
 if __name__ == "__main__":
