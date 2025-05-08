@@ -29,3 +29,6 @@ hs_err_pid*
 replay_pid*
 *.pyc
 /success.txt
+
+# 환경 변수 파일은 절대 버전 관리에 올리지 않음
+.env
