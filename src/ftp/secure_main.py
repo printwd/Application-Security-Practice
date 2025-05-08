@@ -1,8 +1,11 @@
 import sys
 import os
-import argparse
 import time
 from typing import List, Dict, Tuple
+from dotenv import load_dotenv
+
+# .env 파일 로드
+load_dotenv()
 
 # 프로젝트 루트 디렉토리를 Python 경로에 추가
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -17,28 +20,24 @@ LOCKOUT_TIME = 300  # 잠금 시간(초)
 DELAY_FACTOR = 2  # 실패 시 지연 시간 증가 계수
 MAX_LOGIN_TRIES = 3  # 사용자에게 허용할 총 로그인 시도 횟수
 
+def get_ftp_config() -> Tuple[str, str, str]:
+    host = os.getenv("FTP_HOST")
+    user = os.getenv("FTP_USER")
+    password = os.getenv("FTP_PASSWORD")
+    if not host or not user or not password:
+        raise ValueError(".env 파일에 FTP_HOST, FTP_USER, FTP_PASSWORD가 설정되어 있지 않습니다.")
+    return host, user, password
+
 def check_brute_force(ip):
-    # global login_attempts
-    
     current_time = time.time()
-    
-    # IP가 dictionary에 없으면 초기화
     if ip not in login_attempts:
         login_attempts[ip] = []
-    
-    # 시간 초과 여부 확인 - LOCKOUT_TIME이 지났으면 시도 초기화
     if login_attempts[ip] and (current_time - login_attempts[ip][0] > LOCKOUT_TIME):
         login_attempts[ip] = []
-    
-    # 현재 시도 시간 추가
     login_attempts[ip].append(current_time)
-    
-    # 시도 횟수가 MAX_ATTEMPTS를 초과하면 차단
     if len(login_attempts[ip]) > MAX_ATTEMPTS:
-        # 대기 시간 계산 (지수적 증가)
         wait_time = DELAY_FACTOR * (len(login_attempts[ip]) - MAX_ATTEMPTS)
         return False, wait_time
-    
     return True, 0
 
 def attempt_login() -> Tuple[bool, FTPClient]:
@@ -47,24 +46,14 @@ def attempt_login() -> Tuple[bool, FTPClient]:
     - 성공: (True, client 객체)
     - 실패: (False, None)
     """
-    # 커맨드 라인 인자 파싱
-    host, user, password = parse_arguments()
-    
-    # FTP 클라이언트 인스턴스 생성
+    host, user, password = get_ftp_config()
     client = FTPClient(host, user, password)
-    
-    # 브루트 포스 방지 검사
     allowed, wait_time = check_brute_force(host)
-    
     if not allowed:
         print(f"\n보안 경고: 너무 많은 로그인 시도가 감지되었습니다.")
         print(f"{wait_time:.1f}초 후에 다시 시도해주세요.")
         return False, None
-    
-    # 연결 시도
     connection_result = client.connect()
-    
-    # 연결 실패 시 지연 시간 추가 (브루트 포스 방지)
     if not connection_result:
         print("\n연결에 실패했습니다. 사용자 이름과 비밀번호를 확인해주세요.")
         delay = min(len(login_attempts.get(host, [])), 5)
@@ -73,7 +62,6 @@ def attempt_login() -> Tuple[bool, FTPClient]:
             time.sleep(delay)
         return False, None
     else:
-        # 성공 시 로그인 시도 초기화
         if host in login_attempts:
             del login_attempts[host]
         return True, client
@@ -180,42 +168,6 @@ def show_file_list_menu(files: List[str]) -> int:
             print("잘못된 선택입니다.")
         except ValueError:
             print("숫자를 입력해주세요.")
-
-def parse_arguments() -> tuple:
-    """커맨드 라인 인자 파싱"""
-    parser = argparse.ArgumentParser(description='FTP Client for Security Testing')
-    parser.add_argument('-H', '--host', help='FTP server host')
-    parser.add_argument('-u', '--user', help='FTP username')
-    parser.add_argument('-p', '--password', help='FTP password')
-    parser.add_argument('-U', '--userlist', help='사용자명 리스트 파일')
-    parser.add_argument('-P', '--passlist', help='비밀번호 리스트 파일')
-    parser.add_argument('-d', '--delay', help='로그인 실패 시 지연 시간(초)', type=float, default=1.0)
-    args = parser.parse_args()
-    
-    # 입력 인자가 하나라도 있는지 확인
-    has_args = any([args.host, args.user, args.password, args.userlist, args.passlist])
-    
-    if has_args:
-        # 인자가 있는 경우 해당 값 사용
-        host = args.host if args.host else "192.168.100.20"
-        if args.userlist or args.passlist:  # 워드리스트 모드
-            base_path = os.path.dirname(os.path.abspath(__file__))
-            userlist_file = os.path.join(base_path, args.userlist) if args.userlist else None
-            passlist_file = os.path.join(base_path, args.passlist) if args.passlist else None
-            user = userlist_file if args.userlist else (args.user if args.user else "cju")
-            password = passlist_file if args.passlist else (args.password if args.password else "security")
-        else:  # 일반 모드
-            user = args.user if args.user else "cju"
-            password = args.password if args.password else "security"
-    else:
-        # 인자가 없는 경우 사용자 입력 받기
-        print("\n=== FTP 연결 정보 입력 ===")
-        host = input("FTP 서버 주소: ").strip() or "192.168.100.20"
-        user = input("사용자 이름: ").strip() or "cju"
-        password = input("비밀번호: ").strip() or "security"
-    
-    return host, user, password
-
 
 if __name__ == "__main__":
     main()
