@@ -5,8 +5,11 @@ import unittest
 from unittest.mock import patch
 from io import StringIO
 
-sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-from ftp.main import print_menu, main
+# 프로젝트 루트 디렉토리를 Python 경로에 추가
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(project_root)
+
+from src.ftp.main import print_menu, main
 
 class testMain(unittest.TestCase):
     @patch('sys.argv', new=['main.py', '-H', '192.168.100.20', '-u', 'cju', '-p', 'security'])
@@ -99,3 +102,6 @@ class testMain(unittest.TestCase):
         
         # 메인 함수가 정상 종료되었는지 확인
         self.assertIsNone(result)
+
+if __name__ == '__main__':
+    unittest.main()

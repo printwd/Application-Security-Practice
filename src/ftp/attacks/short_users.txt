@@ -1,0 +1,11 @@
+# users.txt
+unit
+branch
+region
+local_admin
+remote_user
+cloud
+virtual
+mobile
+desktop
+cju

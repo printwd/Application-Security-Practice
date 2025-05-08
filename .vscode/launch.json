@@ -12,11 +12,11 @@
             //     "-u", "cju",
             //     "-p", "security"
             // ],
-            "args": [
-                "-H", "192.168.100.20",
-                "-U", "./attacks/short_users.txt",
-                "-P", "./attacks/short_passwords.txt"
-            ],
+            //"args": [
+            //    "-H", "192.168.100.20",
+            //    "-U", "./attacks/short_users.txt",
+            //    "-P", "./attacks/short_passwords.txt"
+            //],
             "console": "integratedTerminal"
         }
     ]

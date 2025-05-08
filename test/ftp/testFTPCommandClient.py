@@ -34,7 +34,7 @@ class TestFTPCommandClient(unittest.TestCase):
             os.remove(target_path)
             
         # FTP 클라이언트 실행
-        from ftp.attacks.ftp_command_client import main
+        from src.ftp.attacks.ftp_command_client import main
         main()
         
         # 파일이 다운로드 되었는지 확인

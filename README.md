@@ -53,3 +53,50 @@
 | 기말    | 30점 | 기말고사 [Mid-term Project](notice/Mid-term%20Project.md)                                                |
 | 중간    | 20점 | Essay(기말고사 때 실시)                                                           |
 
+
+# 소스 코드 구조
+
+```
+Application-Security/
+├── src/
+│   ├── ftp/
+│   │   ├── client/
+│   │   │   ├── FTPClient.py
+│   │   │   └── __pycache__/
+│   │   ├── attacks/
+│   │   │   ├── ftp_bruteforce_multithreads.py
+│   │   │   ├── ftp_mem_scanner.py
+│   │   │   └── __pycache__/
+│   │   ├── main.py
+│   │   ├── secure_main.py
+│   │   └── __pycache__/
+│   ├── samples/
+│   ├── db/
+│   └── __pycache__/
+│
+└── test/
+    ├── ftp/
+    │   ├── testFTPBruteForceMultithreads.py
+    │   └── __pycache__/
+    ├── db/
+    ├── unitest_ftp.py
+    ├── unitest_all.py
+    ├── unitest_db.py
+    ├── config.py
+    └── __pycache__/
+```
+
+## 주요 디렉토리 설명
+
+- `src/`: 소스 코드가 위치하는 디렉토리
+  - `ftp/`: FTP 관련 기능 구현
+    - `client/`: FTP 클라이언트 구현
+    - `attacks/`: FTP 공격 시나리오 구현
+  - `samples/`: 샘플 코드 및 예제
+  - `db/`: 데이터베이스 관련 코드
+
+- `test/`: 테스트 코드가 위치하는 디렉토리
+  - `ftp/`: FTP 관련 테스트 코드
+  - `db/`: 데이터베이스 관련 테스트 코드
+  - `unitest_*.py`: 각 기능별 단위 테스트
+  - `config.py`: 테스트 설정 파일
